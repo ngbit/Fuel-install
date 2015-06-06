@@ -16,3 +16,28 @@
 
 >  git clone https://github.com/openstack/nova.git
 >  git format-patch  -1 c0f773a61
+
+-----------------------------
+# openstack dashboard 中文设置
+
+**安装软件包**:
+
+> apt-get install gettext
+
+**编译2个语言包** ：
+
+> cd /usr/share/openstack-dashboard/openstack_dashboard/locale/zh_CN/LC_MESSAGES
+> msgfmt --statistics --verbose -o django.mo django.po
+
+> cd /usr/share/pyshared/horizon/locale/zh_CN/LC_MESSAGES
+> msgfmt --statistics --verbose -o django.mo django.po
+
+**链接语言包** ：
+
+> cd /usr/lib/python2.7/dist-packages/horizon/locale/zh_CN/LC_MESSAGES
+> ln -s /usr/share/pyshared/horizon/locale/zh_CN/LC_MESSAGES/django.mo django.mo
+
+**重启服务** ：
+
+> sudo service apache2 restart
+
