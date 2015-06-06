@@ -41,3 +41,10 @@
 
 > sudo service apache2 restart
 
+
+## 不能ping和ssh 登录虚拟机
+
+openstack 中防火墙默认屏蔽icmp和tcp相应端口服务，所以为了必须使能icmp和ssh 服务
+
+> nova secgroup-add-rule default icmp -1 -1 0.0.0.0/0
+> nova secgroup-add-rule default tcp 22 22 0.0.0.0/0
