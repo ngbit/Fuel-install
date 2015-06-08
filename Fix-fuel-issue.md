@@ -48,3 +48,9 @@ openstack 中防火墙默认屏蔽icmp和tcp相应端口服务，所以为了必
 
 > nova secgroup-add-rule default icmp -1 -1 0.0.0.0/0
 > nova secgroup-add-rule default tcp 22 22 0.0.0.0/0
+
+## 使能虚拟机自动获取floating ip
+
+Juno 版本openstack 已经支持自动获取floating ip
+
+> Add auto_assign_floating_ip=true in /etc/nova/nova.conf
