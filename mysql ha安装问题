@@ -1,0 +1,31 @@
+mysql的ha安装的参考文档
+http://www.tuicool.com/articles/zyMj2e
+遇到问题解决问题如下：
+1、如果crm 配置完成后，需要等待一段时间，等待主机配置相关信息完成。
+2、mkfs.ext4 /dev/drbd0 ，最好能够采用mkfs.xfs 格式化分区(/dev/drbd0)
+3、 drbdadm create-md mysql  会出现错误。
+    解决这个问题的办法是：
+    dd if=/dev/zero of=/dev/sda6 bs=1M coun=128
+    写入一个文件就可以了。
+4、要对mysql进行配置 ，一定要先设置成  drbdadm primary mysql  
+       在secondary模式下是只能读的。
+5、两台同步机器，如果crm configure中配置网卡参数了，需要设置成同一个网口，不然会除错（同步错误）。
+
+drbd操作过程中遇到的问题说明以及操作说明：
+1、主设备设置为从设备的时候，需要先umount /dev/drbd0。然后在drbdadm secondary mysql。不然从设备不能成主
+2、在实际的操作过程中，service drbd ，不需要启动。
+3、另外： corosync,  pacemaker重启的时候，mysql一定要重启。 
+4、如果连接mysql的时候连接不上，出现错误，一般是两个错误，
+  一是 /dev/drbd0没有挂在到 /mydata目录，
+  二是mysql需要重启。如果客户端通过 VIP 连接mysql的话，密码是 password。
+5、drbd脑裂行为：
+  运行drbd-overview命令后，出现如下信息：
+    cs:StandAlone ro:Primary/Unknown ds:UpToDate/DUnknown   r----
+  出现脑裂之后暂时解决办法：
+  drbdadm -- --discard-my-data connect mysql ，有时候出现不能连上mysql。  
+  这个时候采用如下的方法解决了问题：重启主备双方的机器，让原来的备机器称为主机器，在主机器上运行刚才的命令。
+  如果重启后还是让原来的主机器作为主机器，那么这个命令还是不能执行。
+  而且后续脑裂问题解决之后主备再次切换回来，还是出现脑裂行为。
+  这个问题目前暂时这样，后续先安装rabbitmq。看看后续是否有更好的解决办法。
+
+
